@@ -1,7 +1,7 @@
 (ns ecommerce.core-kafka-service
-  (:import
-   (org.apache.kafka.clients.consumer KafkaConsumer)
-   (java.util Properties Collections))
+  (:import (org.apache.kafka.clients.consumer KafkaConsumer)
+           (java.util Properties Collections)
+           (java.util.regex Pattern))
   (:gen-class))
 
 
@@ -27,10 +27,17 @@
           (fn-parse record))))))
 
 
+(defn subscribe
+  [consumer topic]
+  (if (instance? Pattern topic)
+    (.subscribe consumer topic)
+    (.subscribe consumer (Collections/singletonList topic))))
+
+
 (defn kafka-service
   [group-id topic fn-parse]
   (let [consumer (create-consumer group-id)]
-    (.subscribe consumer (Collections/singletonList topic))
+    (subscribe consumer topic)
     (println "Consumer subscribed to the topic!")
     (run consumer fn-parse)))
 

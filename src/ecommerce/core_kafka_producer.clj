@@ -1,7 +1,7 @@
 (ns ecommerce.core-kafka-producer
-  (:import
-   (org.apache.kafka.clients.producer KafkaProducer ProducerRecord Callback)
-   (java.util Properties)))
+  (:require [cheshire.core :as che])
+  (:import  (org.apache.kafka.clients.producer KafkaProducer ProducerRecord Callback)
+            (java.util Properties)))
 
 
 (defn create-producer
@@ -26,10 +26,17 @@
                  "\n")))))
 
 
+(defn convert-value
+  [v]
+  (if (map? v)
+    (che/generate-string v)
+    v))
+
+
 (defn send-message
   "Envia uma mensagem para o tópico Kafka fornecido com um callback para tratar a resposta."
   [topic key value]
   (let [producer (create-producer)
-        record   (ProducerRecord. topic key value)]
+        record   (ProducerRecord. topic key (convert-value value))]
     (.send producer record (callback))
     (.close producer)))

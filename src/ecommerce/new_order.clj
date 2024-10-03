@@ -20,6 +20,10 @@
 
 (defn -main
   []
-  (let [user-id (uuid)]
+  #_(let [user-id (uuid)]
     (p/send-message "ECOMMERCE_NEW_ORDER" user-id (order user-id))
-    (p/send-message "ECOMMERCE_SEND_EMAIL" user-id email)))
+    (p/send-message "ECOMMERCE_SEND_EMAIL" user-id email))
+  (doseq [_ (range 10)]
+    (let [user-id (uuid)]
+      (p/send-message "ECOMMERCE_NEW_ORDER" user-id (order user-id))
+      (p/send-message "ECOMMERCE_SEND_EMAIL" user-id email))))
